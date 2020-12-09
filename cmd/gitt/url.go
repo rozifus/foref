@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/gitt/pkg/gittery"
 )
 
 type UrlCmd struct {
@@ -50,6 +51,19 @@ func GithubUrl(ctx *general.Context, url *url.URL) error {
 }
 
 func GitlabUrl(ctx *general.Context, url *url.URL) error {
-	fmt.Println(url.Path)
-	return nil
+	path := strings.TrimLeft(url.Path, "/")
+
+	project, _ := gittery.GitlabGetProject(ctx, path)
+	if project != nil {
+		gittery.GitlabDownloadRepositories(ctx, project)
+		return nil
+	}
+
+	group, _ := gittery.GitlabGetGroup(ctx, path)
+	if group != nil {
+		gittery.GitlabDownloadGroupRepositories(ctx, group.FullPath)
+		return nil
+	}
+
+	return fmt.Errorf("Cannot match gitlab project or group in url path: '%s'", path)
 }
