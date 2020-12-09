@@ -1,21 +1,11 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"github.com/alecthomas/kong"
-	"github.com/rozifus/gitt/lib/gittery"
+	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/gitt/pkg/gittery"
+	"github.com/rozifus/gitt/pkg/gittnamespace"
 )
-
-func PrettyPrint(v interface{}) (err error) {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err == nil {
-		fmt.Println(string(b))
-	}
-
-	return nil
-}
 
 type GithubCmd struct {
 	GithubUser GithubUserCmd `cmd name:"user" help:"Download repositories owned by a github user."`
@@ -25,19 +15,15 @@ type GithubUserCmd struct {
 	Username string `arg`
 }
 
-func (githubUserCmd *GithubUserCmd) Run(ctx *CliContext) error {
-	res, err := gittery.UserRepositories(githubUserCmd.Username)
+func (githubUserCmd *GithubUserCmd) Run(ctx *general.Context) error {
+	_, err := gittery.GithubUserRepositories(ctx, githubUserCmd.Username)
 	if err != nil {
 		return err
 	}
 
-	PrettyPrint(res)
+	//util.PrettyPrint(res)
 
 	return nil
-}
-
-type CliContext struct {
-	Namespace string
 }
 
 // CLI //
@@ -49,6 +35,15 @@ var CLI struct {
 
 func main() {
 	ctx := kong.Parse(&CLI)
-	err := ctx.Run(&CliContext{Namespace: CLI.Namespace})
+
+	namespacePath, err := gittnamespace.GetNamespacePath(CLI.Namespace)
+	ctx.FatalIfErrorf(err)
+
+	generalContext := &general.Context{
+		NamespacePath: namespacePath,
+	}
+
+	err = ctx.Run(generalContext)
+
 	ctx.FatalIfErrorf(err)
 }
