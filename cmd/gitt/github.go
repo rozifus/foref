@@ -14,7 +14,7 @@ type GithubUserCmd struct {
 }
 
 func (githubUserCmd *GithubUserCmd) Run(ctx *general.Context) error {
-	_, err := gittery.GithubUserRepositories(ctx, githubUserCmd.Username)
+	err := gittery.GithubUserRepositories(ctx, githubUserCmd.Username)
 	if err != nil {
 		return err
 	}

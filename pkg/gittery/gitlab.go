@@ -11,10 +11,10 @@ import (
 )
 
 // GitlabUserProjects //
-func GitlabUserProjects(ctx *general.Context, username string) ([]*gitlab.Project, error) {
+func GitlabUserProjects(ctx *general.Context, username string) error {
 	client, err := gitlab.NewClient("")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	options := &gitlab.ListProjectsOptions{
@@ -23,12 +23,12 @@ func GitlabUserProjects(ctx *general.Context, username string) ([]*gitlab.Projec
 	}
 	projects, _, err := client.Projects.ListUserProjects(username, options)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	downloadGitlabRepositories(ctx, projects...)
 
-	return projects, err
+	return err
 }
 
 func downloadGitlabRepositories(ctx *general.Context, projects ...*gitlab.Project) {

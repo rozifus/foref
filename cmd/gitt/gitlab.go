@@ -14,7 +14,7 @@ type GitlabUserCmd struct {
 }
 
 func (gitlabUserCmd *GitlabUserCmd) Run(ctx *general.Context) error {
-	_, err := gittery.GitlabUserProjects(ctx, gitlabUserCmd.Username)
+	err := gittery.GitlabUserProjects(ctx, gitlabUserCmd.Username)
 	if err != nil {
 		return err
 	}

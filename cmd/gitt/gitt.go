@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/alecthomas/kong"
 	"github.com/rozifus/gitt/pkg/general"
-	"github.com/rozifus/gitt/pkg/gittnamespace"
 )
 
 // CLI //
@@ -17,7 +16,7 @@ var CLI struct {
 func main() {
 	ctx := kong.Parse(&CLI)
 
-	namespacePath, err := gittnamespace.GetNamespacePath(CLI.Namespace)
+	namespacePath, err := getNamespacePath(CLI.Namespace)
 	ctx.FatalIfErrorf(err)
 
 	generalContext := &general.Context{

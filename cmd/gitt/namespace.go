@@ -1,26 +1,13 @@
-package gittnamespace
+package main
 
 import (
 	"fmt"
 	"os"
-	"os/user"
 	"regexp"
 	"strings"
 )
 
-func getHome() (string, error) {
-	usr, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-	return usr.HomeDir, nil
-}
-
-func get() (string, error) {
-	return GetNamespacePath("default")
-}
-
-func GetNamespacePath(namespace string) (string, error) {
+func getNamespacePath(namespace string) (string, error) {
 	alphaNumericRegex := regexp.MustCompile("^[a-zA-Z0-9]+$")
 	if !alphaNumericRegex.MatchString(namespace) {
 		return "", fmt.Errorf("namespace should be alphanumeric but got '%s'", namespace)

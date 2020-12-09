@@ -12,17 +12,17 @@ import (
 )
 
 // GithubUserRepositories //
-func GithubUserRepositories(ctx *general.Context, username string) ([]*github.Repository, error) {
+func GithubUserRepositories(ctx *general.Context, username string) error {
 	client := github.NewClient(nil)
-	opt := &github.RepositoryListOptions{Type: "owner"}
-	repos, _, err := client.Repositories.List(context.Background(), username, opt)
+	options := &github.RepositoryListOptions{Type: "owner"}
+	repos, _, err := client.Repositories.List(context.Background(), username, options)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	downloadGithubRepositories(ctx, repos...)
 
-	return repos, err
+	return nil
 }
 
 func downloadGithubRepositories(ctx *general.Context, repos ...*github.Repository) {
