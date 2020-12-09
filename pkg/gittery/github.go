@@ -12,15 +12,19 @@ import (
 )
 
 // GithubUserRepositories //
-func GithubUserRepositories(ctx *general.Context, username string) error {
+func GithubUserRepositories(ctx *general.Context, usernames ...string) error {
 	client := github.NewClient(nil)
 	options := &github.RepositoryListOptions{Type: "owner"}
-	repos, _, err := client.Repositories.List(context.Background(), username, options)
-	if err != nil {
-		return err
-	}
+	for _, username := range usernames {
+		tag := "github:" + username + "/*"
+		fmt.Println(tag)
+		repos, _, err := client.Repositories.List(context.Background(), username, options)
+		if err != nil {
+			fmt.Printf("%s : %v\n", tag, err)
+		}
 
-	downloadGithubRepositories(ctx, repos...)
+		downloadGithubRepositories(ctx, repos...)
+	}
 
 	return nil
 }
