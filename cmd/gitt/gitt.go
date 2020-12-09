@@ -11,6 +11,7 @@ var CLI struct {
 
 	Github GithubCmd `cmd name:"github" help:"Download repositories from github."`
 	Gitlab GitlabCmd `cmd name:"gitlab" help:"Download repositories(projects) from gitlab."`
+	Url    UrlCmd    `cmd name:"url" help:"Download repositories based on URL"`
 }
 
 func main() {
