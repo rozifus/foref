@@ -26,5 +26,16 @@ func (githubUserCmd *GithubUserCmd) Run(ctx *general.Context) error {
 }
 
 type GithubRepoCmd struct {
-	UserAndRepository []string `arg`
+	UserAndRepositoryPairs []string `arg`
+}
+
+func (githubRepoCmd *GithubRepoCmd) Run(ctx *general.Context) error {
+	err := gittery.GithubRepositories(ctx, githubRepoCmd.UserAndRepositoryPairs...)
+	if err != nil {
+		return err
+	}
+
+	//util.PrettyPrint(res)
+
+	return nil
 }

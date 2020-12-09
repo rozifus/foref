@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/google/go-github/v33/github"
@@ -24,6 +25,44 @@ func GithubUserRepositories(ctx *general.Context, usernames ...string) error {
 		}
 
 		downloadGithubRepositories(ctx, repos...)
+	}
+
+	return nil
+}
+
+func splitUserRepositoyPair(urp string) (username, reponame string, err error) {
+	if !strings.Contains(urp, "/") {
+		err = fmt.Errorf("user/repository pair must contain / but got '%s'", urp)
+		return
+	}
+
+	splitUrp := strings.Split(urp, "/")
+
+	username = splitUrp[0]
+	reponame = strings.Join(splitUrp[1:], "/")
+	return
+}
+
+func GithubRepositories(ctx *general.Context, userRepositoryPairs ...string) error {
+	client := github.NewClient(nil)
+
+	for _, urp := range userRepositoryPairs {
+		tag := "github:" + urp
+		fmt.Println(tag)
+
+		username, reponame, err := splitUserRepositoyPair(urp)
+		if err != nil {
+			fmt.Printf("%s : %v\n", tag, err)
+			return err
+		}
+
+		repo, _, err := client.Repositories.Get(context.Background(), username, reponame)
+		if err != nil {
+			fmt.Printf("%s : %v\n", tag, err)
+			return err
+		}
+
+		downloadGithubRepositories(ctx, repo)
 	}
 
 	return nil
