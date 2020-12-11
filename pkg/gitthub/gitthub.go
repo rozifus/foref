@@ -1,4 +1,4 @@
-package gittery
+package gitthub
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/google/go-github/v33/github"
+	"github.com/google/go-github/github"
 	"github.com/rozifus/gitt/pkg/general"
 )
 

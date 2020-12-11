@@ -6,13 +6,14 @@ import (
 	"strings"
 
 	"github.com/rozifus/gitt/pkg/general"
-	"github.com/rozifus/gitt/pkg/gittery"
 )
 
+// UrlCmd //
 type UrlCmd struct {
-	Url string `arg type:"url"`
+	Url string `kong:"arg,type='url'"`
 }
 
+// Run //
 func (urlCmd *UrlCmd) Run(ctx *general.Context) error {
 	pUrl, err := url.Parse(urlCmd.Url)
 	if err != nil {
@@ -24,13 +25,15 @@ func (urlCmd *UrlCmd) Run(ctx *general.Context) error {
 		return GithubUrl(ctx, pUrl)
 	case strings.Contains(pUrl.Host, "gitlab.com"):
 		return GitlabUrl(ctx, pUrl)
+	case strings.Contains(pUrl.Host, "bitbucket.org"):
+		return nil
+		//return BitbucketUrl(ctx, pUrl)
 	default:
 		return fmt.Errorf("Unknown repository provider: '%s'", pUrl.Host)
 	}
-
-	return nil
 }
 
+// GithubUrl //
 func GithubUrl(ctx *general.Context, url *url.URL) error {
 	path := strings.TrimLeft(url.Path, "/")
 	spath := strings.Split(path, "/")
@@ -45,25 +48,4 @@ func GithubUrl(ctx *general.Context, url *url.URL) error {
 	default:
 		return fmt.Errorf("Couldn't figure out user or repo for github path: '%s'", path)
 	}
-
-	fmt.Println(url.Path)
-	return nil
-}
-
-func GitlabUrl(ctx *general.Context, url *url.URL) error {
-	path := strings.TrimLeft(url.Path, "/")
-
-	project, _ := gittery.GitlabGetProject(ctx, path)
-	if project != nil {
-		gittery.GitlabDownloadRepositories(ctx, project)
-		return nil
-	}
-
-	group, _ := gittery.GitlabGetGroup(ctx, path)
-	if group != nil {
-		gittery.GitlabDownloadGroupRepositories(ctx, group.FullPath)
-		return nil
-	}
-
-	return fmt.Errorf("Cannot match gitlab project or group in url path: '%s'", path)
 }

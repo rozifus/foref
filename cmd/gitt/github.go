@@ -2,20 +2,23 @@ package main
 
 import (
 	"github.com/rozifus/gitt/pkg/general"
-	"github.com/rozifus/gitt/pkg/gittery"
+	"github.com/rozifus/gitt/pkg/gitthub"
 )
 
+// GithubCmd //
 type GithubCmd struct {
-	GithubUser GithubUserCmd `cmd xor:"githubcmd" name:"user" help:"Download repositories owned by a github user."`
-	GithubRepo GithubRepoCmd `cmd xor:"githubcmd" name:"repo" help:"Download repositories from github."`
+	GithubUser GithubUserCmd `kong:"cmd,xor='githubcmd',name='user',help='Download repositories owned by a github user.'"`
+	GithubRepo GithubRepoCmd `kong:"cmd,xor='githubcmd',name='repo',help='Download repositories from github.'"`
 }
 
+// GithubUserCmd //
 type GithubUserCmd struct {
-	Username []string `arg`
+	Username []string `kong:"arg"`
 }
 
+// Run //
 func (githubUserCmd *GithubUserCmd) Run(ctx *general.Context) error {
-	err := gittery.GithubUserRepositories(ctx, githubUserCmd.Username...)
+	err := gitthub.GithubUserRepositories(ctx, githubUserCmd.Username...)
 	if err != nil {
 		return err
 	}
@@ -25,12 +28,14 @@ func (githubUserCmd *GithubUserCmd) Run(ctx *general.Context) error {
 	return nil
 }
 
+// GithubRepoCmd //
 type GithubRepoCmd struct {
-	UserAndRepositoryPairs []string `arg`
+	UserAndRepositoryPairs []string `kong:"arg"`
 }
 
+// Run //
 func (githubRepoCmd *GithubRepoCmd) Run(ctx *general.Context) error {
-	err := gittery.GithubRepositories(ctx, githubRepoCmd.UserAndRepositoryPairs...)
+	err := gitthub.GithubRepositories(ctx, githubRepoCmd.UserAndRepositoryPairs...)
 	if err != nil {
 		return err
 	}
