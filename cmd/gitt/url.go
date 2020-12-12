@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/gitt/pkg/util"
 )
 
 // UrlCmd //
@@ -13,6 +13,73 @@ type UrlCmd struct {
 	Url string `kong:"arg,type='url'"`
 }
 
+func ExtractIdentifierMeta(identifier string) (source, remaining string, err error) {
+	url, err := url.Parse(identifier)
+	if err == nil && url.Host != "" {
+		source, remaining, err = ParseUrl(url)
+	} else {
+		source, remaining, err = splitHost(identifier)
+	}
+
+	if err != nil {
+		return "", "", err
+	}
+
+	source = strings.TrimLeft(source, "/")
+	return
+}
+
+var hostMap = map[string]([]string){
+	"github.com":    []string{"h", "github", "github.com"},
+	"gitlab.com":    []string{"l", "gitlab", "gitlab.com"},
+	"bitbucket.org": []string{"b", "bitbucket", "bitbucket.org"},
+}
+
+func ParseUrl(u *url.URL) (source, remaining string, err error) {
+	util.PrettyPrint(hostMap)
+	util.PrettyPrint(u.Host)
+	for host := range hostMap {
+		if strings.Contains(u.Host, host) {
+			return host, u.Path, nil
+		}
+	}
+	return "", "", fmt.Errorf("Unknown repository source: '%s'", u.Host)
+}
+
+func splitHost(identifier string) (source, remaining string, err error) {
+	s := strings.Split(identifier, ":")
+	switch len(s) {
+	case 0:
+		return "", "", fmt.Errorf("Invaliad identifier: '%s'", identifier)
+	case 1:
+		return "", s[0], nil
+	case 2:
+		source, err := coerceSource(s[0])
+		if err != nil {
+			return "", "", err
+		}
+		return source, s[1], nil
+	default:
+		return "", "", fmt.Errorf("Invalid identifier, too many colons: '%s'", identifier)
+	}
+}
+
+func coerceSource(source string) (string, error) {
+
+	lowerSource := strings.ToLower(source)
+	for target, aliases := range hostMap {
+		for _, alias := range aliases {
+			if lowerSource == alias {
+				return target, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("unknown source: '%s'", source)
+
+}
+
+/*
 // Run //
 func (urlCmd *UrlCmd) Run(ctx *general.Context) error {
 	pUrl, err := url.Parse(urlCmd.Url)
@@ -32,7 +99,9 @@ func (urlCmd *UrlCmd) Run(ctx *general.Context) error {
 		return fmt.Errorf("Unknown repository provider: '%s'", pUrl.Host)
 	}
 }
+*/
 
+/*
 // GithubUrl //
 func GithubUrl(ctx *general.Context, url *url.URL) error {
 	path := strings.TrimLeft(url.Path, "/")
@@ -49,3 +118,4 @@ func GithubUrl(ctx *general.Context, url *url.URL) error {
 		return fmt.Errorf("Couldn't figure out user or repo for github path: '%s'", path)
 	}
 }
+*/
