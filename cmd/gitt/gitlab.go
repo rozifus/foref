@@ -1,14 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"net/url"
-	"strings"
-
-	"github.com/rozifus/gitt/pkg/general"
-	"github.com/rozifus/gitt/pkg/gittlab"
-)
-
+/*
 // GitlabCmd //
 type GitlabCmd struct {
 	GitlabAuto GitlabAutoCmd `kong:"cmd,name='auto',help='Download repositories from gitlab.'"`
@@ -67,3 +59,5 @@ func GitlabUrl(ctx *general.Context, url *url.URL) error {
 
 	return fmt.Errorf("Cannot match gitlab project or group in url path: '%s'", path)
 }
+
+*/

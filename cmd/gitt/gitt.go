@@ -5,7 +5,9 @@ import (
 
 	"github.com/alecthomas/kong"
 	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/gitt/pkg/gittbucket"
 	"github.com/rozifus/gitt/pkg/gitthub"
+	"github.com/rozifus/gitt/pkg/gittlab"
 )
 
 // CommandLine //
@@ -21,18 +23,16 @@ func (commandLine *CommandLine) Run() error {
 		return err
 	}
 
-	errs := make([]error, 0)
-
 	for _, rawIdentifier := range commandLine.Identifier {
 		source, identifier, err := ExtractIdentifierMeta(rawIdentifier)
 		if err != nil {
-			errs = append(errs, err)
+			fmt.Printf("%v", err)
 			continue
 		}
 
 		if source == "" {
 			if commandLine.Source == "mixed" {
-				errs = append(errs, fmt.Errorf("Cannot determine source for '%s'", rawIdentifier))
+				fmt.Printf("Cannot determine source for identifier '%s'\n", rawIdentifier)
 				continue
 			}
 			source = commandLine.Source
@@ -43,26 +43,27 @@ func (commandLine *CommandLine) Run() error {
 			Source:        source,
 		}
 
-		autoErrs := Auto(ctx, identifier)
-		if err != nil {
-			errs = append(errs, autoErrs...)
-		}
-	}
-
-	if len(errs) > 0 {
-		return fmt.Errorf("errorlist: %v", errs)
+		Auto(ctx, identifier)
 	}
 
 	return nil
-
 }
 
-func Auto(ctx *general.Context, identifier string) []error {
+func Auto(ctx *general.Context, identifier string) error {
+	fmt.Printf("Collecting %s:%s\n", ctx.Source, identifier)
 	switch ctx.Source {
 	case "github.com":
-		return gitthub.Auto(ctx, identifier)
+		gitthub.Auto(ctx, identifier)
+		return nil
+	case "bitbucket.org":
+		gittbucket.Auto(ctx, identifier)
+		return nil
+	case "gitlab.com":
+		gittlab.Auto(ctx, identifier)
+		return nil
+	default:
+		return nil
 	}
-	return []error{}
 }
 
 func main() {

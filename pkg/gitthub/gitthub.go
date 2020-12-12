@@ -13,71 +13,52 @@ import (
 )
 
 // UserRepositories //
-func UserRepositories(ctx *general.Context, usernames ...string) []error {
+func UserRepositories(ctx *general.Context, username string) error {
 	client := github.NewClient(nil)
 	options := &github.RepositoryListOptions{Type: "owner"}
-	errs := []error{}
-	for _, username := range usernames {
-		tag := "github:" + username + "/*"
-		fmt.Println(tag)
-		repos, _, err := client.Repositories.List(context.Background(), username, options)
-		if err != nil {
-			fmt.Printf("%s : %v\n", tag, err)
-		}
 
-		downloadGithubRepositories(ctx, repos...)
+	repos, _, err := client.Repositories.List(context.Background(), username, options)
+	if err != nil {
+		return err
 	}
 
-	return errs
+	downloadGithubRepositories(ctx, repos...)
+	return nil
 }
 
-func splitUserRepositoyPair(urp string) (username, reponame string, err error) {
-	if !strings.Contains(urp, "/") {
-		err = fmt.Errorf("user/repository pair must contain / but got '%s'", urp)
-		return
-	}
-
-	splitUrp := strings.Split(urp, "/")
-
-	username = splitUrp[0]
-	reponame = strings.Join(splitUrp[1:], "/")
-	return
-}
-
-func Repositories(ctx *general.Context, username, reponame string) []error {
+func Repository(ctx *general.Context, username, reponame string) error {
 	client := github.NewClient(nil)
 
 	repo, _, err := client.Repositories.Get(context.Background(), username, reponame)
 	if err != nil {
-		return []error{err}
+		return err
 	}
 
-	return downloadGithubRepositories(ctx, repo)
+	downloadGithubRepositories(ctx, repo)
+	return nil
 }
 
-func downloadGithubRepositories(ctx *general.Context, repos ...*github.Repository) (errs []error) {
+func downloadGithubRepositories(ctx *general.Context, repos ...*github.Repository) {
 	for _, repo := range repos {
 		_, err := git.PlainClone(path.Join(ctx.NamespacePath, ctx.Source, *repo.FullName), false, &git.CloneOptions{
 			URL:      *repo.CloneURL,
 			Progress: os.Stdout,
 		})
 		if err != nil {
-			errs = append(errs, err)
+			fmt.Println(err)
 		}
 	}
 	return
 }
 
-func Auto(ctx *general.Context, identifier string) []error {
+func Auto(ctx *general.Context, identifier string) error {
 	s := strings.Split(identifier, "/")
 	switch len(s) {
 	case 0:
-		return []error{fmt.Errorf("invalid identifier '%s'", identifier)}
+		return fmt.Errorf("invalid identifier '%s'", identifier)
 	case 1:
 		return UserRepositories(ctx, identifier)
-	case 2:
-		return Repositories(ctx, s[0], s[1])
 	default:
-		return []error{fmt.Errorf("")}
+		return Repository(ctx, s[0], s[1])
 	}
 }

@@ -9,22 +9,21 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/ktrysmt/go-bitbucket"
 	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/gitt/pkg/util"
 )
 
-// GetUserRepos //
-func GetUserRepos(ctx *general.Context, identifier string) (*bitbucket.RepositoriesRes, error) {
+// ListUserRepositories //
+func ListUserRepositories(ctx *general.Context, identifier string) (res *bitbucket.RepositoriesRes, err error) {
 	client := bitbucket.NewBasicAuth("", "")
 
-	res, err := client.Repositories.ListForAccount(&bitbucket.RepositoriesOptions{
+	defer func() { recover() }()
+
+	err = fmt.Errorf("error")
+	res, err = client.Repositories.ListForAccount(&bitbucket.RepositoriesOptions{
 		Owner: identifier,
 	})
-	if err != nil {
-		return nil, err
-	}
 
-	//util.PrettyPrint(res)
-
-	return res, nil
+	return
 }
 
 // GetRepo //
@@ -55,38 +54,38 @@ func DownloadRepo(ctx *general.Context, identifier string) error {
 	return nil
 }
 
-// DownloadUserRepositories //
-func DownloadUserRepositories(ctx *general.Context, identifier string) error {
-	userRepos, err := GetUserRepos(ctx, identifier)
+// UserRepositories //
+func UserRepositories(ctx *general.Context, identifier string) error {
+	userRepos, err := ListUserRepositories(ctx, identifier)
 	if err != nil {
 		return err
 	}
-	//util.PrettyPrint(user)
+
+	util.PrettyPrint(userRepos.Items)
 
 	downloadBitbucketRepositories(ctx, userRepos.Items...)
-
 	return nil
-	//downloadBitbutcketRepositories(ctx, user.Items.)
 }
 
 // Auto //
-func Auto(ctx *general.Context, identifiers ...string) error {
-	for _, identifier := range identifiers {
-		repo, err := GetRepo(ctx, identifier)
+func Auto(ctx *general.Context, identifier string) error {
+	var err error = nil
+	s := strings.Split(identifier, "/")
+	for len(s) > 0 {
+		err = UserRepositories(ctx, strings.Join(s, "/"))
 		if err == nil {
-			downloadBitbucketRepositories(ctx, *repo)
-			continue
+			return nil
 		}
 
-		userRepos, err := GetUserRepos(ctx, identifier)
+		err = DownloadRepo(ctx, strings.Join(s, "/"))
 		if err == nil {
-			downloadBitbucketRepositories(ctx, userRepos.Items...)
-			continue
+			return nil
 		}
-		println(err)
 
-		fmt.Printf("Could not identify bitbucket user or repository for '%s'", identifier)
+		s = s[:1]
 	}
+
+	fmt.Printf("Could not identify bitbucket user or repository for identifier '%s'", identifier)
 	return nil
 }
 
@@ -103,6 +102,7 @@ func getCloneHrefFromLinks(rawLinks map[string]interface{}) string {
 
 func downloadBitbucketRepositories(ctx *general.Context, repositories ...bitbucket.Repository) {
 	for _, repo := range repositories {
+		util.PrettyPrint(repo)
 		fmt.Println("bitbucket:" + repo.Full_name)
 		repoCloneHref := getCloneHrefFromLinks(repo.Links)
 		_, err := git.PlainClone(path.Join(ctx.NamespacePath, "bitbucket.org", repo.Full_name), false, &git.CloneOptions{
