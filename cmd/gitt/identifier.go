@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ExtractIdentifierMeta(identifier string) (source, remaining string, err error) {
+func ExtractSource(identifier string) (source, remaining string, err error) {
 	url, err := url.Parse(identifier)
 	if err == nil && url.Host != "" {
 		source, remaining, err = parseUrl(url)
@@ -38,8 +38,8 @@ var hostMap = map[string]([]string){
 }
 
 func coerceSource(source string) (string, error) {
-
 	lowerSource := strings.ToLower(source)
+
 	for target, aliases := range hostMap {
 		for _, alias := range aliases {
 			if lowerSource == alias {
