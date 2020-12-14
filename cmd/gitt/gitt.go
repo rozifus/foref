@@ -10,7 +10,7 @@ import (
 // CommandLine //
 type CommandLine struct {
 	Namespace  string   `kong:"flag,short='n',default='DEFAULT',help='Which folder namespace to use.'"`
-	Source     string   `kong:"flag,short='s',optional,enum='github,gitlab,bitbucket',default='github'"`
+	Source     string   `kong:"flag,short='s',optional,enum='h,github,github.com,l,gitlab,gitlab.com,b,bitbucket,bitbucket.org',default='github'"`
 	Identifier []string `kong:"arg"`
 }
 
@@ -28,8 +28,9 @@ func (commandLine *CommandLine) Run() error {
 			continue
 		}
 
-		if source == "" {
-			source = commandLine.Source
+		source, err = coerceSource(commandLine.Source)
+		if err != nil {
+			fmt.Printf("%v", err)
 		}
 
 		ctx := &general.Context{

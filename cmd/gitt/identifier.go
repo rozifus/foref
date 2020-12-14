@@ -60,11 +60,7 @@ func splitHost(identifier string) (source, remaining string, err error) {
 	case 1:
 		return "", s[0], nil
 	case 2:
-		source, err := coerceSource(s[0])
-		if err != nil {
-			return "", "", err
-		}
-		return source, s[1], nil
+		return s[0], s[1], nil
 	default:
 		return "", "", fmt.Errorf("Invalid identifier, too many colons: '%s'", identifier)
 	}
