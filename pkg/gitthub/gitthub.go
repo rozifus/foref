@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/google/go-github/github"
@@ -15,11 +16,25 @@ import (
 // UserRepositories //
 func UserRepositories(ctx *general.Context, username string) error {
 	client := github.NewClient(nil)
-	options := &github.RepositoryListOptions{Type: "owner"}
+	options := &github.RepositoryListOptions{
+		Type:        "owner",
+		ListOptions: github.ListOptions{PerPage: 100},
+	}
 
-	repos, _, err := client.Repositories.List(context.Background(), username, options)
-	if err != nil {
-		return err
+	var repos []*github.Repository
+
+	i := 0
+	for {
+		i++
+		repoPage, resp, err := client.Repositories.List(context.Background(), username, options)
+		if err != nil {
+			return err
+		}
+		repos = append(repos, repoPage...)
+		if resp.NextPage == 0 {
+			break
+		}
+		options.Page = resp.NextPage
 	}
 
 	downloadGithubRepositories(ctx, repos...)
@@ -40,6 +55,7 @@ func Repository(ctx *general.Context, username, reponame string) error {
 
 func downloadGithubRepositories(ctx *general.Context, repos ...*github.Repository) {
 	for _, repo := range repos {
+		fmt.Printf("%s:%s\n", ctx.Source, *repo.FullName)
 		_, err := git.PlainClone(path.Join(ctx.NamespacePath, ctx.Source, *repo.FullName), false, &git.CloneOptions{
 			URL:      *repo.CloneURL,
 			Progress: os.Stdout,
@@ -47,11 +63,30 @@ func downloadGithubRepositories(ctx *general.Context, repos ...*github.Repositor
 		if err != nil {
 			fmt.Println(err)
 		}
+		fmt.Println("")
 	}
 	return
 }
 
 func Auto(ctx *general.Context, identifier string) error {
+	for {
+		err := AutoSplit(ctx, identifier)
+		if _, ok := err.(*github.RateLimitError); ok {
+			fmt.Printf("%v\n", err)
+			fmt.Println("hit rate limit for github, sleeping for 2 min")
+			time.Sleep(2 * time.Minute)
+			continue
+		}
+		if err != nil {
+			return err
+			//fmt.Printf("%v\n", err)
+		}
+		fmt.Println("")
+		return nil
+	}
+}
+
+func AutoSplit(ctx *general.Context, identifier string) error {
 	s := strings.Split(identifier, "/")
 	switch len(s) {
 	case 0:

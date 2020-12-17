@@ -8,19 +8,19 @@ import (
 // PrettyPrint //
 func PrettyPrint(v interface{}) (err error) {
 	s, err := PrettyString(v)
-	if err == nil {
-		fmt.Println(s)
-		return
+	if err != nil {
+		return err
 	}
 
-	return err
+	fmt.Println("%v", s)
+	return nil
 }
 
 // PrettyString //
 func PrettyString(v interface{}) (s string, err error) {
 	b, err := json.MarshalIndent(v, "", " ")
-	if err == nil {
-		return "", nil
+	if err != nil {
+		return "", err
 	}
 
 	return string(b), nil

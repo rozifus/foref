@@ -13,14 +13,11 @@ func sourceRunner(ctx *general.Context, identifier string) error {
 	fmt.Printf("Collecting %s:%s\n", ctx.Source, identifier)
 	switch ctx.Source {
 	case "github.com":
-		gitthub.Auto(ctx, identifier)
-		return nil
+		return gitthub.Auto(ctx, identifier)
 	case "bitbucket.org":
-		gittbucket.Auto(ctx, identifier)
-		return nil
+		return gittbucket.Auto(ctx, identifier)
 	case "gitlab.com":
-		gittlab.Auto(ctx, identifier)
-		return nil
+		return gittlab.Auto(ctx, identifier)
 	default:
 		return nil
 	}
