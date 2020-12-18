@@ -25,7 +25,7 @@ func ExtractSource(identifier string) (source, remaining string, err error) {
 func parseUrl(u *url.URL) (source, remaining string, err error) {
 	for host := range hostMap {
 		if strings.Contains(u.Host, host) {
-			return host, u.Path, nil
+			return host, strings.TrimLeft(u.Path, "/"), nil
 		}
 	}
 	return "", "", fmt.Errorf("Unknown repository source: '%s'", u.Host)
