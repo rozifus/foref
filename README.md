@@ -15,30 +15,44 @@ Choose a root directory for saved repos
 
 `export GITT_NAMESPACE_DEFAULT=/home/yourusername/Desktop/ReferenceCode`
 
+## Usage
+
+```
+Usage: gitt <identifier> ...
+
+Arguments:
+  <identifier> ...
+
+Flags:
+  -h, --help                   Show context-sensitive help.
+  -n, --namespace="DEFAULT"    Which folder namespace to use.
+  -s, --source="github"
+```
+
 ## Usage Examples
 
 Github Repo
 
-`gitt github repo geerlingguy/ansible-for-devops`
+`gitt -s github repo geerlingguy/ansible-for-devops`
 
 Github User (all public repos)
 
-`gitt github user geerlingguy`
+`gitt -s github user geerlingguy`
 
 Gitlab User (all public repos)
 
-`gitt gitlab user inkscape`
+`gitt -s gitlab user inkscape`
 
 Url (auto match)
 
-`gitt url https://gitlab.com/inkscape/devel/chat-utils`
+`gitt https://gitlab.com/inkscape/devel/chat-utils`
 
-`gitt url https://github.com/geerlingguy/ansible-for-devops`
+`gitt https://github.com/geerlingguy/ansible-for-devops`
 
 ## Namespaces
-You can user multiple alternative root download directories by:
+You can have multiple root download directories
 
-Setting another custom environment variable
+Setting a custom environment variable / namespace
 
 `export GITT_NAMESPACE_MYCUSTOM=/home/yourusername/Deskptop/MyCustomReferenceCode`
 
@@ -48,4 +62,5 @@ Passing the namespace flag
 
 eg
 
-`gitt --namespace mycustom github user rozifus`
+`gitt --namespace mycustom --source github user rozifus`
+
