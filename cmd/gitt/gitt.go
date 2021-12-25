@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/kong"
+
 	"github.com/rozifus/gitt/pkg/general"
 )
 
@@ -11,7 +12,8 @@ import (
 type CommandLine struct {
 	Namespace  string   `kong:"flag,short='n',default='DEFAULT',help='Which folder namespace to use.'"`
 	Source     string   `kong:"flag,short='s',optional,enum='h,github,github.com,l,gitlab,gitlab.com,b,bitbucket,bitbucket.org',default='github'"`
-	Identifier []string `kong:"arg"`
+	IdentifierFile string `kong:"flag,short='f',optional,type='path',help='A yaml file containing repository identifiers'"`
+	Identifier []string `kong:"arg,optional"`
 }
 
 // Run //
@@ -21,7 +23,15 @@ func (commandLine *CommandLine) Run() error {
 		return err
 	}
 
-	for _, sourceAndIdentifier := range commandLine.Identifier {
+	var identifierList []string
+
+	if commandLine.IdentifierFile != "" {
+		identifierList = readIdentifierFile(commandLine.IdentifierFile)
+	} else {
+		identifierList = commandLine.Identifier
+	}
+
+	for _, sourceAndIdentifier := range identifierList {
 		source, identifier, err := ExtractSource(sourceAndIdentifier)
 		if err != nil {
 			fmt.Printf("%v", err)
