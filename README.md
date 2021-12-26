@@ -50,6 +50,7 @@ Url (auto match)
 `gitt https://github.com/geerlingguy/ansible-for-devops`
 
 ## Namespaces
+
 You can have multiple root download directories
 
 Setting a custom environment variable / namespace

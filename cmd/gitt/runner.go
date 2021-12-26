@@ -22,3 +22,46 @@ func sourceRunner(ctx *general.Context, identifier string) error {
 		return nil
 	}
 }
+
+func collectIdentifiers(ctx *general.Context, identifiers []string) error {
+	/*namespacePath, err := getNamespacePath(commandLine.Namespace)
+	if err != nil {
+		return err
+	}*/
+
+	/*var identifierList []string
+
+	if commandLine.IdentifierFile != "" {
+		identifierList = readIdentifierFile(commandLine.IdentifierFile)
+	} else {
+		identifierList = commandLine.Identifier
+	}*/
+
+	for _, sourceAndIdentifier := range identifiers {
+		source, identifier, err := ExtractSource(sourceAndIdentifier)
+		if err != nil {
+			fmt.Printf("%v", err)
+			continue
+		}
+
+		// TODO: something other than this
+		if source == "" && ctx.Source == "" {
+			ctx.Source = "github"
+		}
+
+		source, err = coerceSource(ctx.Source)
+		if err != nil {
+			fmt.Printf("%v", err)
+			continue
+		}
+
+		ctx := &general.Context{
+			NamespacePath: "",//namespacePath, TODO: fix
+			Source:        source,
+		}
+
+		sourceRunner(ctx, identifier)
+	}
+
+	return nil
+}
