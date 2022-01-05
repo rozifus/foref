@@ -12,27 +12,12 @@ import (
 
 	"github.com/rozifus/gitt/cmd"
 	"github.com/rozifus/gitt/cmd/runner"
-	"github.com/rozifus/gitt/pkg/general"
 )
 
-
-type InvCmd struct {
-	Create CreateCmd `cmd`
-	Load  LoadCmd `cmd`
-}
 
 type CreateCmd struct {
 	SurveyPath string `kong:"arg,type='path'"`
 	IdentifierFile string `kong:"arg,type='path'"`
-}
-
-type LoadCmd struct {
-	//IdentifierFile string `kong:"flag,short='f',optional,type='path',help='A yaml file containing repository identifiers'"`
-	IdentifierFiles []string `kong:"arg,optional,type='path'"`
-}
-
-func (cmd *InvCmd) Run(ctx *cmd.Context) error {
-	return nil
 }
 
 func (cmd *CreateCmd) Run(ctx *cmd.Context) error {
@@ -53,41 +38,6 @@ func (cmd *CreateCmd) Run(ctx *cmd.Context) error {
 	err := createInventory(cmd.IdentifierFile, stdIdentifiers)
 
 	return err
-}
-
-func (cmd *LoadCmd) Run(ctx *cmd.Context) error {
-	fmt.Println("inv:load")
-
-	gDatas := make([]*GittfileData, 0)
-	for _, gFile := range cmd.IdentifierFiles {
-		gDatas = append(gDatas, readGittfile(gFile))
-	}
-
-	identifiers := make([]string, 0)
-	for _, gData := range gDatas {
-		identifiers = append(identifiers, gData.Identifiers...)
-	}
-
-	generalCtx := &general.Context{
-		NamespacePath: ctx.NamespacePath,
-		Source: "github.com",
-	}
-
-	fmt.Printf("okay\n")
-	fmt.Printf("%v\n", generalCtx)
-
-	runner.CollectIdentifiers(generalCtx, identifiers)
-
-	return nil
-}
-
-
-type GittfileData struct {
-	GittfileNotice string `yaml:"gittfile_notice,omitempty"`
-	GittfileVersion string `yaml:"gittfile_version,omitempty"`
-	Description string `yaml:"description,omitempty"`
-	Source string `yaml:"source,omitempty"`
-	Identifiers []string `yaml:"identifiers"`
 }
 
 func surveyInventory(path string) []string {
@@ -142,21 +92,4 @@ func createInventory(path string, identifiers []string) error {
 	return err
 }
 
-func readGittfile(path string) *GittfileData {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		fmt.Printf("Failed to open file: %v", path)
-		fmt.Printf("%v", err)
-		return nil
-	}
-
-	var gd GittfileData
-	if err = yaml.Unmarshal(data, &gd); err != nil {
-		fmt.Printf("Failed to parse yaml in: %v", path)
-		fmt.Printf("%v", err)
-		return nil
-	}
-
-	return &gd
-}
 

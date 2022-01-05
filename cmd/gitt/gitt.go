@@ -7,6 +7,7 @@ import (
 
 	"github.com/rozifus/gitt/cmd"
 	"github.com/rozifus/gitt/cmd/gittfile"
+	"github.com/rozifus/gitt/cmd/get"
 )
 
 // CommandLine //
@@ -16,6 +17,7 @@ type CommandLine struct {
 	//IdentifierFile string `kong:"flag,short='f',optional,type='path',help='A yaml file containing repository identifiers'"`
 	//Identifier []string `kong:"arg,optional"`
 
+	Get get.GetCmd `cmd`
 	Inv gittfile.InvCmd `cmd`
 }
 

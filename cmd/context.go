@@ -1,6 +1,7 @@
 package cmd
 
 type Context struct {
-	NamespacePath string
-	DefaultSource string
+	Path string
+	Namespace string
+	//DefaultSource string
 }
