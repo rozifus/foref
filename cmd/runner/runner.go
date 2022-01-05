@@ -1,4 +1,4 @@
-package main
+package runner
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/rozifus/gitt/pkg/gittlab"
 )
 
-func sourceRunner(ctx *general.Context, identifier string) error {
+func SourceRun(ctx *general.Context, identifier string) error {
 	fmt.Printf("Collecting %s:%s\n", ctx.Source, identifier)
 	switch ctx.Source {
 	case "github.com":
@@ -23,7 +23,7 @@ func sourceRunner(ctx *general.Context, identifier string) error {
 	}
 }
 
-func collectIdentifiers(ctx *general.Context, identifiers []string) error {
+func CollectIdentifiers(ctx *general.Context, identifiers []string) error {
 	/*namespacePath, err := getNamespacePath(commandLine.Namespace)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func collectIdentifiers(ctx *general.Context, identifiers []string) error {
 			Source:        source,
 		}
 
-		sourceRunner(ctx, identifier)
+		SourceRun(ctx, identifier)
 	}
 
 	return nil

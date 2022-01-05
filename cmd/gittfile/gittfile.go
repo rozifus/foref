@@ -1,4 +1,4 @@
-package main
+package gittfile
 
 import (
 	"fmt"
@@ -7,9 +7,12 @@ import (
 	"path/filepath"
 
 	"github.com/goccy/go-yaml"
-
-	"github.com/rozifus/gitt/pkg/general"
 	"github.com/go-git/go-git/v5"
+	"github.com/dariubs/uniq"
+
+	"github.com/rozifus/gitt/cmd"
+	"github.com/rozifus/gitt/cmd/runner"
+	"github.com/rozifus/gitt/pkg/general"
 )
 
 
@@ -28,38 +31,61 @@ type LoadCmd struct {
 	IdentifierFiles []string `kong:"arg,optional,type='path'"`
 }
 
-func (cmd *InvCmd) Run(ctx *general.Context) error {
+func (cmd *InvCmd) Run(ctx *cmd.Context) error {
 	return nil
 }
 
-func (cmd *CreateCmd) Run(ctx *general.Context) error {
-	fmt.Println("inv:create")
+func (cmd *CreateCmd) Run(ctx *cmd.Context) error {
+	rawIdentifiers := surveyInventory(cmd.SurveyPath)
 
-	identifiers := surveyInventory(cmd.SurveyPath)
-	fmt.Printf("%v\n", identifiers)
+	stdIdentifiers := make([]string, 0, len(rawIdentifiers))
+	for _,ri := range rawIdentifiers {
+		s, r, err := runner.ExtractSource(ri)
 
-	err := createInventory(cmd.IdentifierFile, identifiers)
-	fmt.Printf("%v\n", err)
+		if err != nil {
+			continue
+		}
 
-	return nil
-}
-
-func (cmd *LoadCmd) Run(ctx *general.Context) error {
-	fmt.Println("inv:load")
-
-	identifiers := make([]string, 0)
-	for _, idf := range cmd.IdentifierFiles {
-		identifiers = append(identifiers, readIdentifierFile(idf)...)
+		stdIdentifiers = append(stdIdentifiers, fmt.Sprintf("%s:%s", s, r))
 	}
 
-	collectIdentifiers(ctx, identifiers)
+
+	err := createInventory(cmd.IdentifierFile, stdIdentifiers)
+
+	return err
+}
+
+func (cmd *LoadCmd) Run(ctx *cmd.Context) error {
+	fmt.Println("inv:load")
+
+	gDatas := make([]*GittfileData, 0)
+	for _, gFile := range cmd.IdentifierFiles {
+		gDatas = append(gDatas, readGittfile(gFile))
+	}
+
+	identifiers := make([]string, 0)
+	for _, gData := range gDatas {
+		identifiers = append(identifiers, gData.Identifiers...)
+	}
+
+	generalCtx := &general.Context{
+		NamespacePath: ctx.NamespacePath,
+		Source: "github.com",
+	}
+
+	fmt.Printf("okay\n")
+	fmt.Printf("%v\n", generalCtx)
+
+	runner.CollectIdentifiers(generalCtx, identifiers)
 
 	return nil
 }
 
 
-type Inventory struct {
-	Version string `yaml:"version,omitempty"`
+type GittfileData struct {
+	GittfileNotice string `yaml:"gittfile_notice,omitempty"`
+	GittfileVersion string `yaml:"gittfile_version,omitempty"`
+	Description string `yaml:"description,omitempty"`
 	Source string `yaml:"source,omitempty"`
 	Identifiers []string `yaml:"identifiers"`
 }
@@ -98,39 +124,39 @@ func surveyInventory(path string) []string {
 		fmt.Printf("%v\n", err)
 	}
 
-	return identifiers
+	return uniq.UniqString(identifiers)
 }
 
 
 func createInventory(path string, identifiers []string) error {
-	inventory := Inventory{
+	gd := GittfileData{
 		Identifiers: identifiers,
 	}
 
-	data, err := yaml.Marshal(&inventory)
+	gdYaml, err := yaml.Marshal(&gd)
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(path, data, 0)
+	err = ioutil.WriteFile(path, gdYaml, 0644)
 	return err
 }
 
-func readIdentifierFile(path string) []string {
+func readGittfile(path string) *GittfileData {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Failed to open file: %v", path)
 		fmt.Printf("%v", err)
-		return make([]string, 0)
+		return nil
 	}
 
-	var inventory Inventory
-	if err = yaml.Unmarshal(data, &inventory); err != nil {
+	var gd GittfileData
+	if err = yaml.Unmarshal(data, &gd); err != nil {
 		fmt.Printf("Failed to parse yaml in: %v", path)
 		fmt.Printf("%v", err)
-		return make([]string, 0)
+		return nil
 	}
 
-	return inventory.Identifiers
+	return &gd
 }
 

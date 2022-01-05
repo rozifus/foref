@@ -1,4 +1,4 @@
-package main
+package runner
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func getNamespacePath(namespace string) (string, error) {
+func GetNamespacePath(namespace string) (string, error) {
 	alphaNumericRegex := regexp.MustCompile("^[a-zA-Z0-9]+$")
 	if !alphaNumericRegex.MatchString(namespace) {
 		return "", fmt.Errorf("namespace should be alphanumeric but got '%s'", namespace)

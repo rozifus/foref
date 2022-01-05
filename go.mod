@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/alecthomas/kong v0.2.12
+	github.com/dariubs/uniq v0.1.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-git/go-git/v5 v5.2.0
 	github.com/goccy/go-yaml v1.9.4

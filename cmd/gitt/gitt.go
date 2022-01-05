@@ -5,17 +5,18 @@ import (
 
 	"github.com/alecthomas/kong"
 
-	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/gitt/cmd"
+	"github.com/rozifus/gitt/cmd/gittfile"
 )
 
 // CommandLine //
 type CommandLine struct {
-	//Namespace  string   `kong:"flag,short='n',default='DEFAULT',help='Which folder namespace to use.'"`
+	Namespace  string   `kong:"flag,short='n',default='DEFAULT',help='Which folder namespace to use.'"`
 	//Source     string   `kong:"flag,short='s',optional,enum='h,github,github.com,l,gitlab,gitlab.com,b,bitbucket,bitbucket.org',default='github'"`
 	//IdentifierFile string `kong:"flag,short='f',optional,type='path',help='A yaml file containing repository identifiers'"`
 	//Identifier []string `kong:"arg,optional"`
 
-	Inv InvCmd `cmd`
+	Inv gittfile.InvCmd `cmd`
 }
 
 // Run //
@@ -28,7 +29,7 @@ func main() {
 	commandLine := &CommandLine{}
 
 	ktx := kong.Parse(commandLine)
-	ktx.Run(&general.Context{})
+	ktx.Run(&cmd.Context{})
 
 	/*err := commandLine.Run()
 	ktx.FatalIfErrorf(err)*/
