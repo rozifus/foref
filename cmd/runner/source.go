@@ -19,6 +19,7 @@ func ExtractSource(identifier string) (source, remaining string, err error) {
 	}
 
 	source = strings.TrimLeft(source, "/")
+
 	return
 }
 
@@ -38,7 +39,10 @@ var hostMap = map[string]([]string){
 }
 
 func coerceSource(source string) (string, error) {
+	fmt.Println("1", source)
 	lowerSource := strings.ToLower(source)
+
+	fmt.Println(source)
 
 	for target, aliases := range hostMap {
 		for _, alias := range aliases {

@@ -1,4 +1,4 @@
-package gittfile
+package command
 
 
 type GittfileData struct {

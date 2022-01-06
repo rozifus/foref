@@ -1,4 +1,4 @@
-package gittfile
+package command
 
 import (
 	"fmt"
@@ -15,13 +15,19 @@ import (
 )
 
 
-type CreateCmd struct {
-	SurveyPath string `kong:"arg,type='path'"`
+type ExportCmd struct {
+	Namespace  string     `kong:"flag,short='n',default='DEFAULT',help='Which folder namespace to use.'"`
+	Path  string   		  `kong:"flag,short='p',help='Which folder path to use.'"`
 	IdentifierFile string `kong:"arg,type='path'"`
 }
 
-func (cmd *CreateCmd) Run(ctx *cmd.Context) error {
-	rawIdentifiers := surveyInventory(cmd.SurveyPath)
+func (cmd *ExportCmd) Run(ctx *cmd.Context) error {
+	path, err := runner.GetNamespacePath(cmd.Namespace, cmd.Path)
+	if err != nil {
+		return err
+	}
+
+	rawIdentifiers := surveyInventory(path)
 
 	stdIdentifiers := make([]string, 0, len(rawIdentifiers))
 	for _,ri := range rawIdentifiers {
@@ -34,10 +40,7 @@ func (cmd *CreateCmd) Run(ctx *cmd.Context) error {
 		stdIdentifiers = append(stdIdentifiers, fmt.Sprintf("%s:%s", s, r))
 	}
 
-
-	err := createInventory(cmd.IdentifierFile, stdIdentifiers)
-
-	return err
+	return createInventory(cmd.IdentifierFile, stdIdentifiers)
 }
 
 func surveyInventory(path string) []string {

@@ -7,7 +7,13 @@ import (
 	"strings"
 )
 
-func GetNamespacePath(namespace string) (string, error) {
+func GetNamespacePath(namespace, path string) (string, error) {
+	fmt.Println("test", namespace, path)
+
+	if path != "" {
+		return path, nil
+	}
+
 	alphaNumericRegex := regexp.MustCompile("^[a-zA-Z0-9]+$")
 	if !alphaNumericRegex.MatchString(namespace) {
 		return "", fmt.Errorf("namespace should be alphanumeric but got '%s'", namespace)
@@ -22,3 +28,4 @@ func GetNamespacePath(namespace string) (string, error) {
 
 	return namespacePath, nil
 }
+

@@ -1,4 +1,4 @@
-package gittfile
+package command
 
 import (
 	"fmt"
@@ -12,13 +12,17 @@ import (
 )
 
 
-type LoadCmd struct {
-	//IdentifierFile string `kong:"flag,short='f',optional,type='path',help='A yaml file containing repository identifiers'"`
+type ImportCmd struct {
+	Namespace  string   `kong:"flag,short='n',default='DEFAULT',help='Which folder namespace to use.'"`
+	Path  string   		`kong:"flag,short='p',help='Which folder path to use.'"`
 	IdentifierFiles []string `kong:"arg,optional,type='path'"`
 }
 
-func (cmd *LoadCmd) Run(ctx *cmd.Context) error {
-	fmt.Println("inv:load")
+func (cmd *ImportCmd) Run(ctx *cmd.Context) error {
+	path, err := runner.GetNamespacePath(cmd.Namespace, cmd.Path)
+	if err != nil {
+		return err
+	}
 
 	gDatas := make([]*GittfileData, 0)
 	for _, gFile := range cmd.IdentifierFiles {
@@ -31,7 +35,7 @@ func (cmd *LoadCmd) Run(ctx *cmd.Context) error {
 	}
 
 	generalCtx := &general.Context{
-		NamespacePath: ctx.Namespace,
+		NamespacePath: path,
 		Source: "github.com",
 	}
 

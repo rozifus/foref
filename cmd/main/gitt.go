@@ -6,19 +6,18 @@ import (
 	"github.com/alecthomas/kong"
 
 	"github.com/rozifus/gitt/cmd"
-	"github.com/rozifus/gitt/cmd/gittfile"
-	"github.com/rozifus/gitt/cmd/get"
+	"github.com/rozifus/gitt/cmd/command"
 )
 
 // CommandLine //
 type CommandLine struct {
-	Namespace  string   `kong:"flag,short='n',default='DEFAULT',help='Which folder namespace to use.'"`
 	//Source     string   `kong:"flag,short='s',optional,enum='h,github,github.com,l,gitlab,gitlab.com,b,bitbucket,bitbucket.org',default='github'"`
 	//IdentifierFile string `kong:"flag,short='f',optional,type='path',help='A yaml file containing repository identifiers'"`
 	//Identifier []string `kong:"arg,optional"`
 
-	Get get.GetCmd `cmd`
-	Inv gittfile.InvCmd `cmd`
+	Get command.GetCmd `cmd`
+	Import command.ImportCmd `cmd`
+	Export command.ExportCmd `cmd`
 }
 
 // Run //

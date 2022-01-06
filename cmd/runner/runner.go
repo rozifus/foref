@@ -19,7 +19,7 @@ func SourceRun(ctx *general.Context, identifier string) error {
 	case "gitlab.com":
 		return gittlab.Auto(ctx, identifier)
 	default:
-		return nil
+		return fmt.Errorf("unknown source '%s'", ctx.Source)
 	}
 }
 
@@ -40,27 +40,33 @@ func CollectIdentifiers(ctx *general.Context, identifiers []string) error {
 	for _, sourceAndIdentifier := range identifiers {
 		source, identifier, err := ExtractSource(sourceAndIdentifier)
 		if err != nil {
-			fmt.Printf("%v", err)
+			fmt.Printf("Error getting source: %v\n", err)
 			continue
 		}
 
 		// TODO: something other than this
-		if source == "" && ctx.Source == "" {
+		/*if source == "" && ctx.Source == "" {
 			ctx.Source = "github"
+		}*/
+
+		if source == "" {
+			source, err = coerceSource(ctx.Source)
+			if err != nil {
+				fmt.Printf("%v", err)
+				continue
+			}
 		}
 
-		source, err = coerceSource(ctx.Source)
+		gCtx := &general.Context{
+			NamespacePath: ctx.NamespacePath,
+			Source: source,
+		}
+
+
+		err = SourceRun(gCtx, identifier)
 		if err != nil {
 			fmt.Printf("%v", err)
-			continue
 		}
-
-		ctx := &general.Context{
-			NamespacePath: "",//namespacePath, TODO: fix
-			Source:        source,
-		}
-
-		SourceRun(ctx, identifier)
 	}
 
 	return nil
