@@ -1,9 +1,9 @@
 package command
 
 import (
-	"github.com/rozifus/gitt/cmd"
-	"github.com/rozifus/gitt/cmd/runner"
-	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/fref/cmd"
+	"github.com/rozifus/fref/cmd/runner"
+	"github.com/rozifus/fref/pkg/source"
 )
 
 
@@ -19,9 +19,9 @@ func (cmd *GetCmd) Run(ctx *cmd.Context) error {
 		return err
 	}
 
-	generalCtx := &general.Context{
+	sCtx := &source.Context{
 		NamespacePath: path,
 	}
 
-	return runner.CollectIdentifiers(generalCtx, cmd.Identifier)
+	return runner.CollectIdentifiers(sCtx, cmd.Identifier)
 }

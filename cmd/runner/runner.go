@@ -3,71 +3,44 @@ package runner
 import (
 	"fmt"
 
-	"github.com/rozifus/gitt/pkg/general"
-	"github.com/rozifus/gitt/pkg/gittbucket"
-	"github.com/rozifus/gitt/pkg/gitthub"
-	"github.com/rozifus/gitt/pkg/gittlab"
+	"github.com/rozifus/fref/pkg/source"
+	"github.com/rozifus/fref/pkg/source/bucket"
+	"github.com/rozifus/fref/pkg/source/hub"
+	"github.com/rozifus/fref/pkg/source/lab"
 )
 
-func SourceRun(ctx *general.Context, identifier string) error {
-	fmt.Printf("Collecting %s:%s\n", ctx.Source, identifier)
-	switch ctx.Source {
-	case "github.com":
-		return gitthub.Auto(ctx, identifier)
-	case "bitbucket.org":
-		return gittbucket.Auto(ctx, identifier)
-	case "gitlab.com":
-		return gittlab.Auto(ctx, identifier)
-	default:
-		return fmt.Errorf("unknown source '%s'", ctx.Source)
-	}
-}
 
-func CollectIdentifiers(ctx *general.Context, identifiers []string) error {
-	/*namespacePath, err := getNamespacePath(commandLine.Namespace)
-	if err != nil {
-		return err
-	}*/
-
-	/*var identifierList []string
-
-	if commandLine.IdentifierFile != "" {
-		identifierList = readIdentifierFile(commandLine.IdentifierFile)
-	} else {
-		identifierList = commandLine.Identifier
-	}*/
-
-	for _, sourceAndIdentifier := range identifiers {
-		source, identifier, err := ExtractSource(sourceAndIdentifier)
+func CollectIdentifiers(ctx *source.Context, identifiers []string) error {
+	for _, identifier := range identifiers {
+		sourceId, repo, err := ExtractSource(ctx.Source, identifier)
 		if err != nil {
-			fmt.Printf("Error getting source: %v\n", err)
+			fmt.Printf("%v\n", err)
 			continue
 		}
 
-		// TODO: something other than this
-		/*if source == "" && ctx.Source == "" {
-			ctx.Source = "github"
-		}*/
-
-		if source == "" {
-			source, err = coerceSource(ctx.Source)
-			if err != nil {
-				fmt.Printf("%v", err)
-				continue
-			}
-		}
-
-		gCtx := &general.Context{
+		iCtx := &source.Context{
 			NamespacePath: ctx.NamespacePath,
-			Source: source,
+			Source: sourceId,
 		}
 
-
-		err = SourceRun(gCtx, identifier)
+		err = collect(iCtx, repo)
 		if err != nil {
-			fmt.Printf("%v", err)
+			fmt.Printf("%v\n", err)
 		}
 	}
 
 	return nil
+}
+
+func collect(ctx *source.Context, repo string) error {
+	switch ctx.Source {
+	case "github.com":
+		return hub.Auto(ctx, repo)
+	case "bitbucket.org":
+		return bucket.Auto(ctx, repo)
+	case "gitlab.com":
+		return lab.Auto(ctx, repo)
+	default:
+		return fmt.Errorf("unknown source '%s'", ctx.Source)
+	}
 }

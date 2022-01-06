@@ -10,8 +10,8 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/dariubs/uniq"
 
-	"github.com/rozifus/gitt/cmd"
-	"github.com/rozifus/gitt/cmd/runner"
+	"github.com/rozifus/fref/cmd"
+	"github.com/rozifus/fref/cmd/runner"
 )
 
 
@@ -31,7 +31,7 @@ func (cmd *ExportCmd) Run(ctx *cmd.Context) error {
 
 	stdIdentifiers := make([]string, 0, len(rawIdentifiers))
 	for _,ri := range rawIdentifiers {
-		s, r, err := runner.ExtractSource(ri)
+		s, r, err := runner.ExtractSource("github.com", ri) //TODO: not hardcode
 
 		if err != nil {
 			continue
@@ -82,7 +82,7 @@ func surveyInventory(path string) []string {
 
 
 func createInventory(path string, identifiers []string) error {
-	gd := GittfileData{
+	gd := FrefData{
 		Identifiers: identifiers,
 	}
 

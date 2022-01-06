@@ -6,9 +6,9 @@ import (
 
 	"github.com/goccy/go-yaml"
 
-	"github.com/rozifus/gitt/cmd"
-	"github.com/rozifus/gitt/cmd/runner"
-	"github.com/rozifus/gitt/pkg/general"
+	"github.com/rozifus/fref/cmd"
+	"github.com/rozifus/fref/cmd/runner"
+	"github.com/rozifus/fref/pkg/source"
 )
 
 
@@ -24,9 +24,9 @@ func (cmd *ImportCmd) Run(ctx *cmd.Context) error {
 		return err
 	}
 
-	gDatas := make([]*GittfileData, 0)
+	gDatas := make([]*FrefData, 0)
 	for _, gFile := range cmd.IdentifierFiles {
-		gDatas = append(gDatas, readGittfile(gFile))
+		gDatas = append(gDatas, readFrefFile(gFile))
 	}
 
 	identifiers := make([]string, 0)
@@ -34,17 +34,17 @@ func (cmd *ImportCmd) Run(ctx *cmd.Context) error {
 		identifiers = append(identifiers, gData.Identifiers...)
 	}
 
-	generalCtx := &general.Context{
+	sourceCtx := &source.Context{
 		NamespacePath: path,
-		Source: "github.com",
+		Source: "github.com", //TODO: source from flag
 	}
 
-	runner.CollectIdentifiers(generalCtx, identifiers)
+	runner.CollectIdentifiers(sourceCtx, identifiers)
 
 	return nil
 }
 
-func readGittfile(path string) *GittfileData {
+func readFrefFile(path string) *FrefData {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Failed to open file: %v", path)
@@ -52,7 +52,7 @@ func readGittfile(path string) *GittfileData {
 		return nil
 	}
 
-	var gd GittfileData
+	var gd FrefData
 	if err = yaml.Unmarshal(data, &gd); err != nil {
 		fmt.Printf("Failed to parse yaml in: %v", path)
 		fmt.Printf("%v", err)

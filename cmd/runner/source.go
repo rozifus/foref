@@ -4,26 +4,44 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+
+
 )
 
-func ExtractSource(identifier string) (source, remaining string, err error) {
+
+var hostMap = map[string]([]string){
+	"github.com":    []string{"h", "github", "github.com"},
+	"gitlab.com":    []string{"l", "gitlab", "gitlab.com"},
+	"bitbucket.org": []string{"b", "bitbucket", "bitbucket.org"},
+}
+
+
+func ExtractSource(defaultSource, identifier string) (sourceId, repo string, err error) {
 	url, err := url.Parse(identifier)
+
 	if err == nil && url.Host != "" {
-		source, remaining, err = parseUrl(url)
+		sourceId, repo, err = splitUrl(url)
 	} else {
-		source, remaining, err = splitHost(identifier)
+		sourceId, repo, err = splitIdentifier(identifier)
 	}
 
 	if err != nil {
 		return "", "", err
 	}
 
-	source = strings.TrimLeft(source, "/")
+	sourceId = strings.TrimLeft(sourceId, "/")
+
+	if sourceId == "" {
+		sourceId, err = coerceSourceId(defaultSource)
+		if err != nil {
+			return "", "", err
+		}
+	}
 
 	return
 }
 
-func parseUrl(u *url.URL) (source, remaining string, err error) {
+func splitUrl(u *url.URL) (sourceId, remaining string, err error) {
 	for host := range hostMap {
 		if strings.Contains(u.Host, host) {
 			return host, strings.TrimLeft(u.Path, "/"), nil
@@ -32,31 +50,7 @@ func parseUrl(u *url.URL) (source, remaining string, err error) {
 	return "", "", fmt.Errorf("Unknown repository source: '%s'", u.Host)
 }
 
-var hostMap = map[string]([]string){
-	"github.com":    []string{"h", "github", "github.com"},
-	"gitlab.com":    []string{"l", "gitlab", "gitlab.com"},
-	"bitbucket.org": []string{"b", "bitbucket", "bitbucket.org"},
-}
-
-func coerceSource(source string) (string, error) {
-	fmt.Println("1", source)
-	lowerSource := strings.ToLower(source)
-
-	fmt.Println(source)
-
-	for target, aliases := range hostMap {
-		for _, alias := range aliases {
-			if lowerSource == alias {
-				return target, nil
-			}
-		}
-	}
-
-	return "", fmt.Errorf("unknown source: '%s'", source)
-
-}
-
-func splitHost(identifier string) (source, remaining string, err error) {
+func splitIdentifier(identifier string) (sourceId, remaining string, err error) {
 	s := strings.Split(identifier, ":")
 	switch len(s) {
 	case 0:
@@ -68,4 +62,18 @@ func splitHost(identifier string) (source, remaining string, err error) {
 	default:
 		return "", "", fmt.Errorf("Invalid identifier, too many colons: '%s'", identifier)
 	}
+}
+
+func coerceSourceId(sourceId string) (string, error) {
+	lowerSource := strings.ToLower(sourceId)
+
+	for target, aliases := range hostMap {
+		for _, alias := range aliases {
+			if lowerSource == alias {
+				return target, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("unknown source: '%s'", sourceId)
 }

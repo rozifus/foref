@@ -1,4 +1,4 @@
-module github.com/rozifus/gitt
+module github.com/rozifus/fref
 
 go 1.15
 

@@ -1,24 +1,24 @@
-# gitt
+# fref
 Quickly collect public git repositories into a reference folder from the command line
 
 ## Installation (ubuntu)
-Build gitt
+Build fref
 
-`go build -o gitt ./cmd/gitt/*`
+`go build -o fref ./cmd/fref/*`
 
-Copy gitt to system
+Copy fref to system
 
-`sudo cp ./gitt /usr/local/bin`
+`sudo cp ./fref /usr/local/bin`
 
 ## Setup (ubuntu)
 Choose a root directory for saved repos
 
-`export GITT_NAMESPACE_DEFAULT=/home/yourusername/Desktop/ReferenceCode`
+`export FREF_NAMESPACE_DEFAULT=/home/yourusername/Desktop/ReferenceCode`
 
 ## Usage
 
 ```
-Usage: gitt <identifier> ...
+Usage: fref <identifier> ...
 
 Arguments:
   <identifier> ...
@@ -33,21 +33,21 @@ Flags:
 
 Github Repo
 
-`gitt -s github repo geerlingguy/ansible-for-devops`
+`fref -s github repo geerlingguy/ansible-for-devops`
 
 Github User (all public repos)
 
-`gitt -s github user geerlingguy`
+`fref -s github user geerlingguy`
 
 Gitlab User (all public repos)
 
-`gitt -s gitlab user inkscape`
+`fref -s gitlab user inkscape`
 
 Url (auto match)
 
-`gitt https://gitlab.com/inkscape/devel/chat-utils`
+`fref https://gitlab.com/inkscape/devel/chat-utils`
 
-`gitt https://github.com/geerlingguy/ansible-for-devops`
+`fref https://github.com/geerlingguy/ansible-for-devops`
 
 ## Namespaces
 
@@ -55,13 +55,13 @@ You can have multiple root download directories
 
 Setting a custom environment variable / namespace
 
-`export GITT_NAMESPACE_MYCUSTOM=/home/yourusername/Deskptop/MyCustomReferenceCode`
+`export FREF_NAMESPACE_MYCUSTOM=/home/yourusername/Deskptop/MyCustomReferenceCode`
 
 Passing the namespace flag
 
-`gitt --namespace mycustom ...`
+`fref --namespace mycustom ...`
 
 eg
 
-`gitt --namespace mycustom --source github user rozifus`
+`fref --namespace mycustom --source github user rozifus`
 
