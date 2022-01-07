@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/ktrysmt/go-bitbucket"
-	"github.com/rozifus/fref/pkg/source"
-	"github.com/rozifus/fref/pkg/util"
+	"github.com/rozifus/foref/pkg/source"
+	"github.com/rozifus/foref/pkg/util"
 )
 
 // ListUserRepositories //

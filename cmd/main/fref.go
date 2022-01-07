@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/alecthomas/kong"
 
-	"github.com/rozifus/fref/cmd"
-	"github.com/rozifus/fref/cmd/command"
+	"github.com/rozifus/foref/cmd"
+	"github.com/rozifus/foref/cmd/command"
 )
 
 // CommandLine //

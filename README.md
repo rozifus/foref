@@ -1,24 +1,24 @@
-# fref
+# foref
 Quickly collect public git repositories into a reference folder from the command line
 
 ## Installation (ubuntu)
-Build fref
+Build foref
 
-`go build -o fref ./cmd/fref/*`
+`go build -o foref ./cmd/foref/*`
 
-Copy fref to system
+Copy foref to system
 
-`sudo cp ./fref /usr/local/bin`
+`sudo cp ./foref /usr/local/bin`
 
 ## Setup (ubuntu)
 Choose a root directory for saved repos
 
-`export FREF_NAMESPACE_DEFAULT=/home/yourusername/Desktop/ReferenceCode`
+`export FOREF_NAMESPACE_DEFAULT=/home/yourusername/Desktop/ReferenceCode`
 
 ## Usage
 
 ```
-Usage: fref <identifier> ...
+Usage: foref <identifier> ...
 
 Arguments:
   <identifier> ...
@@ -33,21 +33,21 @@ Flags:
 
 Github Repo
 
-`fref -s github repo geerlingguy/ansible-for-devops`
+`foref -s github repo geerlingguy/ansible-for-devops`
 
 Github User (all public repos)
 
-`fref -s github user geerlingguy`
+`foref -s github user geerlingguy`
 
 Gitlab User (all public repos)
 
-`fref -s gitlab user inkscape`
+`foref -s gitlab user inkscape`
 
 Url (auto match)
 
-`fref https://gitlab.com/inkscape/devel/chat-utils`
+`foref https://gitlab.com/inkscape/devel/chat-utils`
 
-`fref https://github.com/geerlingguy/ansible-for-devops`
+`foref https://github.com/geerlingguy/ansible-for-devops`
 
 ## Namespaces
 
@@ -55,13 +55,13 @@ You can have multiple root download directories
 
 Setting a custom environment variable / namespace
 
-`export FREF_NAMESPACE_MYCUSTOM=/home/yourusername/Deskptop/MyCustomReferenceCode`
+`export FOREF_NAMESPACE_MYCUSTOM=/home/yourusername/Deskptop/MyCustomReferenceCode`
 
 Passing the namespace flag
 
-`fref --namespace mycustom ...`
+`foref --namespace mycustom ...`
 
 eg
 
-`fref --namespace mycustom --source github user rozifus`
+`foref --namespace mycustom --source github user rozifus`
 

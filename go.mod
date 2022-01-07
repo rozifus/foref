@@ -1,4 +1,4 @@
-module github.com/rozifus/fref
+module github.com/rozifus/foref
 
 go 1.15
 

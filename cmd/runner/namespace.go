@@ -17,7 +17,7 @@ func GetNamespacePath(namespace, path string) (string, error) {
 		return "", fmt.Errorf("namespace should be alphanumeric but got '%s'", namespace)
 	}
 
-	envName := "FREF_NAMESPACE_" + strings.ToUpper(namespace)
+	envName := "FOREF_NAMESPACE_" + strings.ToUpper(namespace)
 
 	namespacePath := os.Getenv(envName)
 	if namespacePath == "" {

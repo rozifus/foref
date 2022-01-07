@@ -6,9 +6,9 @@ import (
 
 	"github.com/goccy/go-yaml"
 
-	"github.com/rozifus/fref/cmd"
-	"github.com/rozifus/fref/cmd/runner"
-	"github.com/rozifus/fref/pkg/source"
+	"github.com/rozifus/foref/cmd"
+	"github.com/rozifus/foref/cmd/runner"
+	"github.com/rozifus/foref/pkg/source"
 )
 
 
@@ -24,9 +24,9 @@ func (cmd *ImportCmd) Run(ctx *cmd.Context) error {
 		return err
 	}
 
-	gDatas := make([]*FrefData, 0)
+	gDatas := make([]*ForefData, 0)
 	for _, gFile := range cmd.IdentifierFiles {
-		gDatas = append(gDatas, readFrefFile(gFile))
+		gDatas = append(gDatas, readForefFile(gFile))
 	}
 
 	identifiers := make([]string, 0)
@@ -44,7 +44,7 @@ func (cmd *ImportCmd) Run(ctx *cmd.Context) error {
 	return nil
 }
 
-func readFrefFile(path string) *FrefData {
+func readForefFile(path string) *ForefData {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Failed to open file: %v", path)
@@ -52,7 +52,7 @@ func readFrefFile(path string) *FrefData {
 		return nil
 	}
 
-	var gd FrefData
+	var gd ForefData
 	if err = yaml.Unmarshal(data, &gd); err != nil {
 		fmt.Printf("Failed to parse yaml in: %v", path)
 		fmt.Printf("%v", err)

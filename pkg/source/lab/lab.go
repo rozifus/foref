@@ -6,7 +6,7 @@ import (
 	"path"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/rozifus/fref/pkg/source"
+	"github.com/rozifus/foref/pkg/source"
 	"github.com/xanzy/go-gitlab"
 )
 

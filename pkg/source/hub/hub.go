@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/google/go-github/github"
-	"github.com/rozifus/fref/pkg/source"
+	"github.com/rozifus/foref/pkg/source"
 )
 
 // UserRepositories //

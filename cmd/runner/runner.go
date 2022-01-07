@@ -3,10 +3,10 @@ package runner
 import (
 	"fmt"
 
-	"github.com/rozifus/fref/pkg/source"
-	"github.com/rozifus/fref/pkg/source/bucket"
-	"github.com/rozifus/fref/pkg/source/hub"
-	"github.com/rozifus/fref/pkg/source/lab"
+	"github.com/rozifus/foref/pkg/source"
+	"github.com/rozifus/foref/pkg/source/bucket"
+	"github.com/rozifus/foref/pkg/source/hub"
+	"github.com/rozifus/foref/pkg/source/lab"
 )
 
 

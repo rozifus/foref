@@ -1,9 +1,9 @@
 package command
 
 import (
-	"github.com/rozifus/fref/cmd"
-	"github.com/rozifus/fref/cmd/runner"
-	"github.com/rozifus/fref/pkg/source"
+	"github.com/rozifus/foref/cmd"
+	"github.com/rozifus/foref/cmd/runner"
+	"github.com/rozifus/foref/pkg/source"
 )
 
 

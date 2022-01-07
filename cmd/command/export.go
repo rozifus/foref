@@ -10,8 +10,8 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/dariubs/uniq"
 
-	"github.com/rozifus/fref/cmd"
-	"github.com/rozifus/fref/cmd/runner"
+	"github.com/rozifus/foref/cmd"
+	"github.com/rozifus/foref/cmd/runner"
 )
 
 
@@ -82,7 +82,7 @@ func surveyInventory(path string) []string {
 
 
 func createInventory(path string, identifiers []string) error {
-	gd := FrefData{
+	gd := ForefData{
 		Identifiers: identifiers,
 	}
 
